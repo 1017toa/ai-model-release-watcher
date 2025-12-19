@@ -1,27 +1,27 @@
 # AI Model Release Watcher 🔍
 
-AI 모델의 출시 예정 및 실제 출시를 실시간으로 모니터링하고 Slack으로 알림을 보내는 서비스입니다.
+A service that monitors AI model releases and announcements in real-time across multiple platforms and sends notifications to Slack.
 
-## ✨ 주요 기능
+## ✨ Key Features
 
-- **다중 소스 모니터링**: GitHub, Hugging Face, ModelScope, arXiv, Google News RSS
-- **리더보드 추적**: Artificial Analysis Image Generation 리더보드 순위 변동 감지
-- **출시 단계 구분**: 출시 예정(Announced) vs 실제 출시(Launched) 자동 분류
-- **다중 Slack 채널**: 이벤트 유형별 다른 채널로 알림 라우팅
-- **우선순위 모델**: 특정 모델(예: Z-Image)의 모든 변경사항 추적
-- **24시간 운영**: Docker 컨테이너로 무중단 모니터링
+- **Multi-Source Monitoring**: GitHub, Hugging Face, ModelScope, arXiv, Google News RSS
+- **Leaderboard Tracking**: Detects ranking changes on Artificial Analysis leaderboards
+- **Release Stage Detection**: Automatically classifies events as Announced vs Launched
+- **Multi-Channel Slack Notifications**: Routes different event types to specific channels
+- **Priority Model Tracking**: Monitor all changes for specific models (e.g., Z-Image)
+- **24/7 Operation**: Continuous monitoring via Docker containers
 
-## 📁 프로젝트 구조
+## 📁 Project Structure
 
 ```
 watcher/
-├── main.py                 # 메인 엔트리포인트
-├── config.yaml             # 설정 파일
-├── requirements.txt        # Python 의존성
-├── Dockerfile              # Docker 이미지 설정
-├── docker-compose.yml      # Docker Compose 설정
-├── .env.example            # 환경변수 템플릿
-├── watchers/               # 각 소스별 Watcher
+├── main.py                 # Main entry point
+├── config.yaml             # Configuration file
+├── requirements.txt        # Python dependencies
+├── Dockerfile              # Docker image configuration
+├── docker-compose.yml      # Docker Compose configuration
+├── .env.example            # Environment variables template
+├── watchers/               # Source-specific watchers
 │   ├── base.py
 │   ├── github_watcher.py
 │   ├── huggingface_watcher.py
@@ -29,53 +29,53 @@ watcher/
 │   ├── arxiv_watcher.py
 │   ├── news_watcher.py
 │   └── leaderboard_watcher.py
-├── notifiers/              # 알림 전송
+├── notifiers/              # Notification handlers
 │   └── slack.py
-├── models/                 # 데이터 모델
+├── models/                 # Data models
 │   └── state.py
-├── utils/                  # 유틸리티
+├── utils/                  # Utilities
 │   └── config_loader.py
-└── data/                   # SQLite DB 저장소
+└── data/                   # SQLite DB storage
     └── watcher_state.db
 ```
 
-## 🚀 빠른 시작
+## 🚀 Quick Start
 
-### 1. 저장소 클론
+### 1. Clone Repository
 
 ```bash
-git clone https://github.com/your-username/ai-model-watcher.git
-cd ai-model-watcher
+git clone https://github.com/your-username/ai-model-release-watcher.git
+cd ai-model-release-watcher
 ```
 
-### 2. 환경 변수 설정
+### 2. Setup Environment Variables
 
 ```bash
 cp .env.example .env
 ```
 
-`.env` 파일을 편집하여 API 키를 설정합니다:
+Edit the `.env` file to configure your API keys:
 
 ```env
-# Slack Webhook URLs (필수)
+# Slack Webhook URLs (Required)
 SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
 SLACK_WEBHOOK_LEADERBOARD=https://hooks.slack.com/services/YOUR/LEADERBOARD/WEBHOOK
 SLACK_WEBHOOK_ANNOUNCEMENTS=https://hooks.slack.com/services/YOUR/ANNOUNCEMENTS/WEBHOOK
 SLACK_WEBHOOK_LAUNCHES=https://hooks.slack.com/services/YOUR/LAUNCHES/WEBHOOK
 
-# API Tokens (선택)
+# API Tokens (Optional)
 GITHUB_TOKEN=ghp_your_github_token
 HF_TOKEN=hf_your_huggingface_token
 ARTIFICIAL_ANALYSIS_API_KEY=your_aa_api_key
 ```
 
-### 3. Docker로 실행
+### 3. Run with Docker
 
 ```bash
 docker-compose up -d --build
 ```
 
-### 4. 로그 확인
+### 4. Check Logs
 
 ```bash
 docker-compose logs -f watcher
@@ -83,86 +83,89 @@ docker-compose logs -f watcher
 
 ---
 
-## ⚙️ 환경 변수 설정 (.env)
+## ⚙️ Environment Variables (.env)
 
-### Slack Webhook URL 발급 방법
+### How to Get Slack Webhook URLs
 
-1. [Slack API](https://api.slack.com/apps) 접속
-2. **Create New App** > **From scratch** 선택
-3. 앱 이름과 워크스페이스 선택
-4. **Features** > **Incoming Webhooks** 클릭
-5. **Activate Incoming Webhooks** 활성화
-6. **Add New Webhook to Workspace** 클릭
-7. 채널 선택 후 **Allow**
-8. 생성된 Webhook URL 복사
+1. Visit [Slack API](https://api.slack.com/apps)
+2. Click **Create New App** > **From scratch**
+3. Enter app name and select workspace
+4. Click **Features** > **Incoming Webhooks**
+5. Activate **Incoming Webhooks**
+6. Click **Add New Webhook to Workspace**
+7. Select channel and click **Allow**
+8. Copy the generated Webhook URL
 
-> 💡 채널별로 다른 Webhook이 필요하면 위 과정을 반복하세요.
+> 💡 Repeat this process for each channel that needs a separate webhook.
 
-### 환경 변수 목록
+### Environment Variables List
 
-| 변수명 | 필수 | 설명 |
-|--------|------|------|
-| `SLACK_WEBHOOK_URL` | ✅ | 기본 Slack Webhook URL |
-| `SLACK_WEBHOOK_LEADERBOARD` | ❌ | 리더보드 알림 채널 |
-| `SLACK_WEBHOOK_ANNOUNCEMENTS` | ❌ | 출시 예정 알림 채널 |
-| `SLACK_WEBHOOK_LAUNCHES` | ❌ | 실제 출시 알림 채널 |
-| `GITHUB_TOKEN` | ❌ | GitHub API 토큰 (Rate Limit 증가) |
-| `HF_TOKEN` | ❌ | Hugging Face 토큰 (비공개 모델 접근) |
-| `ARTIFICIAL_ANALYSIS_API_KEY` | ❌ | Artificial Analysis API 키 (리더보드 필수) |
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `SLACK_WEBHOOK_URL` | ✅ | Default Slack Webhook URL |
+| `SLACK_WEBHOOK_LEADERBOARD` | ❌ | Leaderboard notifications channel |
+| `SLACK_WEBHOOK_ANNOUNCEMENTS` | ❌ | Announcement notifications channel |
+| `SLACK_WEBHOOK_LAUNCHES` | ❌ | Launch notifications channel |
+| `GITHUB_TOKEN` | ❌ | GitHub API token (increases rate limit) |
+| `HF_TOKEN` | ❌ | Hugging Face token (access private models) |
+| `ARTIFICIAL_ANALYSIS_API_KEY` | ❌ | Artificial Analysis API key (required for leaderboards) |
 
-### API 토큰 발급 방법
+### How to Get API Tokens
 
 #### GitHub Token
-1. [GitHub Settings > Developer settings > Personal access tokens](https://github.com/settings/tokens)
-2. **Generate new token (classic)** 클릭
-3. `public_repo` 권한 선택
-4. 생성된 토큰 복사
+1. Visit [GitHub Settings > Developer settings > Personal access tokens](https://github.com/settings/tokens)
+2. Click **Generate new token (classic)**
+3. Select `public_repo` scope
+4. Copy the generated token
 
 #### Hugging Face Token
-1. [Hugging Face Settings > Access Tokens](https://huggingface.co/settings/tokens)
-2. **New token** 클릭
-3. `read` 권한으로 생성
+1. Visit [Hugging Face Settings > Access Tokens](https://huggingface.co/settings/tokens)
+2. Click **New token**
+3. Create with `read` permission
 
 #### Artificial Analysis API Key
-1. [Artificial Analysis Documentation](https://artificialanalysis.ai/documentation) 접속
-2. API 키 발급 신청
+1. Visit [Artificial Analysis Documentation](https://artificialanalysis.ai/documentation)
+2. Request API key access
 
 ---
 
-## 📝 설정 파일 (config.yaml)
+## 📝 Configuration File (config.yaml)
 
-### 기본 구조
+### Basic Structure
 
 ```yaml
-# 체크 주기 (시간 단위)
+# Check interval in hours
 check_interval_hours: 1
 
-# 데이터베이스 경로
+# Database path
 database_path: "data/watcher_state.db"
 
-# 리더보드 설정
+# Leaderboard settings
 leaderboards:
   enabled: true
+  max_rank: 30  # Only track models within top 30
   boards:
-    - text-to-image
-    - editing
-  max_rank: 30  # 30등 이내 모델만 추적
+    text-to-image: true
+    image-editing: true
+    text-to-video: false
+    image-to-video: false
+    text-to-speech: false
 
-# 모니터링할 모델
+# Models to monitor
 models:
   - name: "Z-Image"
     github: "Tongyi-MAI/Z-Image"
     huggingface: "Tongyi-MAI/Z-Image-Turbo"
     priority: high
 
-# 우선순위 모델 (모든 변경사항 추적)
+# Priority models (track all changes)
 priority_models:
   - name: "Z-Image"
     notify_all_commits: true
     notify_all_hf_changes: true
     mention_channel: true
 
-# 알림 설정
+# Notification settings
 notifications:
   include_icons: true
   include_timestamp: true
@@ -171,76 +174,76 @@ notifications:
     - release_launched
 ```
 
-### 주요 설정 항목
+### Key Configuration Options
 
-#### 리더보드 설정 (`leaderboards`)
+#### Leaderboard Settings (`leaderboards`)
 
-| 항목 | 기본값 | 설명 |
-|------|--------|------|
-| `enabled` | `true` | 리더보드 모니터링 전체 활성화 |
-| `max_rank` | `30` | 이 순위 이내의 모델만 추적 |
-| `boards` | 아래 참조 | 각 리더보드별 활성화 설정 |
+| Option | Default | Description |
+|--------|---------|-------------|
+| `enabled` | `true` | Enable/disable all leaderboard monitoring |
+| `max_rank` | `30` | Only track models within this rank |
+| `boards` | See below | Enable/disable each leaderboard |
 
-**지원하는 리더보드** ([Artificial Analysis API](https://artificialanalysis.ai/documentation)):
+**Supported Leaderboards** ([Artificial Analysis API](https://artificialanalysis.ai/documentation)):
 
-| Board ID | 카테고리 | 설명 |
-|----------|----------|------|
-| `text-to-image` | 🖼️ Image | 텍스트→이미지 생성 |
-| `image-editing` | 🖼️ Image | 이미지 편집 |
-| `text-to-video` | 🎬 Video | 텍스트→비디오 생성 |
-| `image-to-video` | 🎬 Video | 이미지→비디오 생성 |
-| `text-to-speech` | 🔊 Speech | 텍스트→음성 생성 |
+| Board ID | Category | Description |
+|----------|----------|-------------|
+| `text-to-image` | 🖼️ Image | Text-to-Image generation |
+| `image-editing` | 🖼️ Image | Image editing |
+| `text-to-video` | 🎬 Video | Text-to-Video generation |
+| `image-to-video` | 🎬 Video | Image-to-Video generation |
+| `text-to-speech` | 🔊 Speech | Text-to-Speech generation |
 
-**설정 예시:**
+**Configuration Example:**
 
 ```yaml
 leaderboards:
   enabled: true
   max_rank: 30
   boards:
-    # 원하는 리더보드만 true로 설정
-    text-to-image: true      # 활성화
-    image-editing: true      # 활성화
-    text-to-video: false     # 비활성화
-    image-to-video: false    # 비활성화
-    text-to-speech: false    # 비활성화
+    # Set to true to enable, false to disable
+    text-to-image: true      # Enabled
+    image-editing: true      # Enabled
+    text-to-video: false     # Disabled
+    image-to-video: false    # Disabled
+    text-to-speech: false    # Disabled
 ```
 
-#### 모델 설정 (`models`)
+#### Model Settings (`models`)
 
 ```yaml
 models:
-  - name: "모델명"              # 필수: 표시될 모델 이름
-    github: "owner/repo"        # GitHub 레포지토리
-    huggingface: "org/model"    # Hugging Face 모델 ID
-    modelscope: "org/model"     # ModelScope 모델 ID
-    arxiv_query: "검색어"        # arXiv 검색 쿼리
-    news_keywords: "뉴스 키워드"  # Google News 검색어
-    priority: high              # 우선순위 (high/normal)
+  - name: "Model Name"           # Required: Display name
+    github: "owner/repo"         # GitHub repository
+    huggingface: "org/model"     # Hugging Face model ID
+    modelscope: "org/model"      # ModelScope model ID
+    arxiv_query: "search query"  # arXiv search query
+    news_keywords: "keywords"    # Google News search terms
+    priority: high               # Priority level (high/normal)
 ```
 
-#### 우선순위 모델 (`priority_models`)
+#### Priority Models (`priority_models`)
 
 ```yaml
 priority_models:
   - name: "Z-Image"
-    notify_all_commits: true     # 모든 커밋 알림
-    notify_all_hf_changes: true  # 모든 HF 변경 알림
-    mention_channel: true        # @channel 멘션
+    notify_all_commits: true     # Notify on every commit
+    notify_all_hf_changes: true  # Notify on all HF changes
+    mention_channel: true        # Use @channel mentions
 ```
 
-#### 알림 설정 (`notifications`)
+#### Notification Settings (`notifications`)
 
 ```yaml
 notifications:
-  include_icons: true            # 이모지 아이콘 포함
-  include_timestamp: true        # 타임스탬프 포함
-  mention_channel_for:           # @channel 멘션할 이벤트
+  include_icons: true            # Include emoji icons
+  include_timestamp: true        # Include timestamps
+  mention_channel_for:           # Events to mention @channel
     - release_launched
     - new_release
     - new_model
     - leaderboard_top3_change
-  event_routing:                 # 이벤트별 채널 라우팅
+  event_routing:                 # Route events to channels
     leaderboard_new_entry: "leaderboard"
     leaderboard_rank_change: "leaderboard"
     release_announced: "announcements"
@@ -249,99 +252,99 @@ notifications:
 
 ---
 
-## 🐳 Docker 사용법
+## 🐳 Docker Usage
 
-### 시작
+### Start
 
 ```bash
-# 빌드 및 시작
+# Build and start
 docker-compose up -d --build
 
-# 로그 확인
+# View logs
 docker-compose logs -f watcher
 ```
 
-### 중지
+### Stop
 
 ```bash
 docker-compose down
 ```
 
-### 상태 확인
+### Check Status
 
 ```bash
-# 컨테이너 상태
+# Container status
 docker-compose ps
 
-# DB 상태 확인
+# Check database state
 sqlite3 data/watcher_state.db "SELECT key FROM watcher_states;"
 ```
 
-### 상태 초기화
+### Reset State
 
 ```bash
-# 모든 상태 초기화 (모든 이벤트 재감지됨)
+# Clear all states (will re-detect all events)
 docker-compose exec watcher python main.py --clear-state
 ```
 
 ---
 
-## 🖥️ 로컬 실행 (개발용)
+## 🖥️ Local Development
 
 ```bash
-# 의존성 설치
+# Install dependencies
 pip install -r requirements.txt
 
-# 환경 변수 로드
+# Load environment variables
 export $(cat .env | xargs)
 
-# 단일 실행
+# Single run
 python main.py
 
-# 데몬 모드 (주기적 실행)
+# Daemon mode (periodic execution)
 python main.py --daemon
 
-# Slack 연결 테스트
+# Test Slack connection
 python main.py --test
 ```
 
 ---
 
-## 📊 모니터링 대상
+## 📊 Monitoring Targets
 
-### 지원하는 이벤트 유형
+### Supported Event Types
 
-| 소스 | 이벤트 | 설명 |
-|------|--------|------|
-| GitHub | `new_commit` | 새 커밋 |
-| GitHub | `new_release` | 새 릴리스 |
-| GitHub | `repo_created` | 레포지토리 생성 |
-| Hugging Face | `new_model` | 새 모델 등록 |
-| Hugging Face | `model_update` | 모델 업데이트 |
-| Leaderboard | `leaderboard_new_entry` | 새 모델 진입 |
-| Leaderboard | `leaderboard_rank_change` | 순위 변동 |
-| Leaderboard | `leaderboard_top3_change` | Top 3 변경 |
-| arXiv | `new_paper` | 새 논문 |
-| News | `news_article` | 뉴스 기사 |
-
----
-
-## 🔧 문제 해결
-
-### Slack 알림이 오지 않음
-1. `.env` 파일의 Webhook URL 확인
-2. `python main.py --test`로 연결 테스트
-3. Slack 앱이 해당 채널에 추가되어 있는지 확인
-
-### 리더보드 데이터가 비어있음
-1. `ARTIFICIAL_ANALYSIS_API_KEY` 설정 확인
-2. API 키가 유효한지 확인
-
-### GitHub Rate Limit 오류
-1. `GITHUB_TOKEN` 설정 (미인증: 60회/시간 → 인증: 5000회/시간)
+| Source | Event | Description |
+|--------|-------|-------------|
+| GitHub | `new_commit` | New commit |
+| GitHub | `new_release` | New release |
+| GitHub | `repo_created` | Repository created |
+| Hugging Face | `new_model` | New model registered |
+| Hugging Face | `model_update` | Model updated |
+| Leaderboard | `leaderboard_new_entry` | New model entry |
+| Leaderboard | `leaderboard_rank_change` | Rank change |
+| Leaderboard | `leaderboard_top3_change` | Top 3 change |
+| arXiv | `new_paper` | New paper |
+| News | `news_article` | News article |
 
 ---
 
-## 📄 라이선스
+## 🔧 Troubleshooting
+
+### No Slack Notifications
+1. Check Webhook URLs in `.env` file
+2. Test connection with `python main.py --test`
+3. Verify Slack app is added to the channel
+
+### Empty Leaderboard Data
+1. Verify `ARTIFICIAL_ANALYSIS_API_KEY` is set
+2. Confirm API key is valid
+
+### GitHub Rate Limit Errors
+1. Set `GITHUB_TOKEN` (unauthenticated: 60/hour → authenticated: 5000/hour)
+
+---
+
+## 📄 License
 
 MIT License
