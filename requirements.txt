@@ -1,0 +1,21 @@
+# AI Model Release Watcher - Dependencies
+# Core
+requests>=2.31.0
+pyyaml>=6.0.1
+apscheduler>=3.10.4
+
+# Database
+sqlalchemy>=2.0.23
+
+# RSS/Feed parsing
+feedparser>=6.0.10
+
+# Hugging Face
+huggingface-hub>=0.19.4
+
+# HTML Parsing (for leaderboard scraping)
+beautifulsoup4>=4.12.2
+
+# Utilities
+python-dateutil>=2.8.2
+

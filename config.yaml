@@ -1,0 +1,103 @@
+# AI Model Release Watcher Configuration
+# ========================================
+# 
+# ⚠️ API keys and webhooks are loaded from .env file (NOT here!)
+# Copy .env.example to .env and fill in your values:
+#   - SLACK_WEBHOOK_URL, SLACK_WEBHOOK_LEADERBOARD, etc.
+#   - GITHUB_TOKEN, HF_TOKEN, ARTIFICIAL_ANALYSIS_API_KEY
+
+# Check interval in hours
+check_interval_hours: 1
+
+# Database path for state management
+database_path: "data/watcher_state.db"
+
+# Leaderboard monitoring
+# Artificial Analysis API: https://artificialanalysis.ai/documentation
+leaderboards:
+  # Enable/disable all leaderboard monitoring
+  enabled: true
+  
+  # Maximum rank to track (only models within this rank are monitored)
+  max_rank: 30
+  
+  # Enable/disable each leaderboard (true: monitor, false: skip)
+  boards:
+    # 🖼️ Image
+    text-to-image: true       # Text-to-Image generation
+    image-editing: true       # Image editing
+    
+    # 🎬 Video
+    text-to-video: false      # Text-to-Video generation
+    image-to-video: false     # Image-to-Video generation
+    
+    # 🔊 Speech
+    text-to-speech: false     # Text-to-Speech generation
+
+# Models to monitor
+models:
+  - name: "Z-Image"
+    # GitHub repository (owner/repo format)
+    github: "Tongyi-MAI/Z-Image"
+    # Hugging Face model ID
+    huggingface: "Tongyi-MAI/Z-Image-Turbo"
+    # ModelScope model ID
+    modelscope: "Tongyi-MAI/Z-Image-Turbo"
+    # arXiv search query
+    arxiv_query: "Z-Image diffusion transformer"
+    # News search keywords
+    news_keywords: "Z-Image AI Alibaba"
+    # Priority monitoring - notify on every change
+    priority: high
+    # Always notify for these event types (even minor ones)
+    always_notify:
+      - new_commit
+      - new_release
+      - new_model
+      - model_update
+
+  # Add more models to monitor:
+  # - name: "Flux"
+  #   github: "black-forest-labs/flux"
+  #   huggingface: "black-forest-labs/FLUX.1-dev"
+  #   arxiv_query: "FLUX diffusion model"
+  #   news_keywords: "FLUX AI image generation"
+  
+  # - name: "Stable Diffusion 3"
+  #   github: "Stability-AI/stablediffusion"
+  #   huggingface: "stabilityai/stable-diffusion-3-medium"
+  #   arxiv_query: "Stable Diffusion 3"
+  #   news_keywords: "Stable Diffusion 3 Stability AI"
+
+# Notification settings
+notifications:
+  # Include source icon/emoji in messages
+  include_icons: true
+  # Include timestamp in messages
+  include_timestamp: true
+  # Mention @channel for important events
+  mention_channel_for:
+    - release_launched
+    - new_release
+    - new_model
+    - leaderboard_top3_change
+  # Route specific event types to specific channels
+  event_routing:
+    # Leaderboard events to leaderboard channel
+    leaderboard_new_entry: "leaderboard"
+    leaderboard_rank_change: "leaderboard"
+    leaderboard_top3_change: "leaderboard"
+    # Announcements vs Launches
+    release_announced: "announcements"
+    release_launched: "launches"
+
+# Priority model settings
+# High priority models get notifications for ALL changes (commits, updates, etc.)
+priority_models:
+  - name: "Z-Image"
+    # Notify on every commit (not just releases)
+    notify_all_commits: true
+    # Notify on any HuggingFace change
+    notify_all_hf_changes: true
+    # Mention @channel for this model's events
+    mention_channel: true
