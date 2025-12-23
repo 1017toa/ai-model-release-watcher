@@ -44,9 +44,9 @@ models:
     # ModelScope model ID
     modelscope: "Tongyi-MAI/Z-Image-Turbo"
     # arXiv search query
-    arxiv_query: "Z-Image diffusion transformer"
+    arxiv_query: "Z-Image Edit"
     # News search keywords
-    news_keywords: "Z-Image AI Alibaba"
+    news_keywords: "Z-Image Edit"
     # Priority monitoring - notify on every change
     priority: high
     # Always notify for these event types (even minor ones)
@@ -56,8 +56,20 @@ models:
       - new_model
       - model_update
 
+  - name: "FLUX.2"
+    github: "black-forest-labs/flux2"
+    huggingface: "black-forest-labs/FLUX.2-dev"
+    arxiv_query: "FLUX.2 Klein"
+    news_keywords: "FLUX.2 Klein"
+    priority: high
+    always_notify:
+      - new_commit
+      - new_release
+      - new_model
+      - model_update
+
   # Add more models to monitor:
-  # - name: "Flux"
+  # - name: "FLUX.1"
   #   github: "black-forest-labs/flux"
   #   huggingface: "black-forest-labs/FLUX.1-dev"
   #   arxiv_query: "FLUX diffusion model"
@@ -100,4 +112,9 @@ priority_models:
     # Notify on any HuggingFace change
     notify_all_hf_changes: true
     # Mention @channel for this model's events
+    mention_channel: true
+  
+  - name: "FLUX.2 Klein"
+    notify_all_commits: true
+    notify_all_hf_changes: true
     mention_channel: true

@@ -20,6 +20,8 @@ class NewsWatcher(BaseWatcher):
     def __init__(self, model_config: dict):
         super().__init__(model_config)
         self.keywords = model_config.get('news_keywords')
+        # Use model name for exact title matching
+        self.model_name_filter = model_config.get('name', '')
 
     @property
     def source_name(self) -> str:
@@ -44,6 +46,15 @@ class NewsWatcher(BaseWatcher):
             
             if feed.entries:
                 for entry in feed.entries[:15]:  # Limit to 15 most recent
+                    # Clean up title (Google News adds source to title)
+                    title = entry.get('title', 'No title')
+                    if ' - ' in title:
+                        title = title.rsplit(' - ', 1)[0]
+                    
+                    # Filter: Only notify if model name is in the title
+                    if self.model_name_filter and self.model_name_filter not in title:
+                        continue
+                    
                     # Create a unique ID from the link
                     article_id = hashlib.md5(entry.get('link', '').encode()).hexdigest()[:16]
                     
@@ -65,11 +76,6 @@ class NewsWatcher(BaseWatcher):
                         source_name = 'Unknown Source'
                         if hasattr(entry, 'source') and entry.source:
                             source_name = entry.source.get('title', 'Unknown Source')
-                        
-                        # Clean up title (Google News adds source to title)
-                        title = entry.get('title', 'No title')
-                        if ' - ' in title:
-                            title = title.rsplit(' - ', 1)[0]
                         
                         events.append(WatchEvent(
                             source='news',
