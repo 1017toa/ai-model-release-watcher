@@ -344,33 +344,37 @@ class SlackNotifier:
                 model_name = event.model_name
                 
                 # Format rank change info
-                if 'prev_rank' in extra and 'current_rank' in extra:
-                    prev_rank = extra['prev_rank']
+                if 'previous_rank' in extra and 'current_rank' in extra:
+                    prev_rank = extra['previous_rank']
                     curr_rank = extra['current_rank']
                     rank_diff = prev_rank - curr_rank
-                    
+
                     if rank_diff > 0:
                         direction = f":arrow_up: +{rank_diff}"
                     elif rank_diff < 0:
                         direction = f":arrow_down: {rank_diff}"
                     else:
                         direction = "→"
-                    
+
                     rank_info = f"#{prev_rank} → #{curr_rank} ({direction})"
+                elif 'rank' in extra:
+                    # New entry - just show the rank
+                    curr_rank = extra['rank']
+                    rank_info = f"#{curr_rank}"
                 else:
                     curr_rank = extra.get('current_rank', '?')
                     rank_info = f"#{curr_rank}"
-                
+
                 # Format ELO change if available
                 elo_info = ""
-                if 'prev_elo' in extra and 'current_elo' in extra:
-                    prev_elo = extra['prev_elo']
+                if 'previous_elo' in extra and 'current_elo' in extra:
+                    prev_elo = extra['previous_elo']
                     curr_elo = extra['current_elo']
                     elo_diff = curr_elo - prev_elo
                     elo_sign = "+" if elo_diff >= 0 else ""
                     elo_info = f" | ELO: {prev_elo} → {curr_elo} ({elo_sign}{elo_diff})"
-                
-                changes_text.append(f"• *{model_name}*: {rank_info}{elo_info}")
+
+                changes_text.append(f"• {model_name}: {rank_info}{elo_info}")
             
             # Add section for this leaderboard
             blocks.append({
