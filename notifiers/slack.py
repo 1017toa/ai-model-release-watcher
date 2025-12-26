@@ -172,7 +172,7 @@ class SlackNotifier:
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": f"*{event.title}*\n{event.description[:500]}"
+                    "text": f"*{event.title}*\n{event.description[:500] if event.description else ''}"
                 }
             }
         ]
